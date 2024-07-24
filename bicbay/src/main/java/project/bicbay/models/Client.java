@@ -1,35 +1,14 @@
 package project.bicbay.models;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 @Entity
-public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
+public class Client  extends User{
     private String cpf;
-    private String email;
-    private String password;
-    private float balance;
 
-    public Client(String name, String cpf, String email, String password, float balance) {
-        this.name = name;
+    public Client(String name, String email, String password, float balance, String cpf) {
+        super(name, email, password, balance);
         this.cpf = cpf;
-        this.email = email;
-        this.password = password;
-        this.balance = balance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getCpf() {
@@ -40,27 +19,13 @@ public class Client {
         this.cpf = cpf;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public float getBalance() {
-        return balance;
-    }
-
-    public void setBalance(float balance) {
-        this.balance = balance;
+    public String transfer(User user, float value) {
+        if (super.getBalance() < value) {
+            return "Saldo insuficiente. Operação cancelada.";
+        } else {
+            super.setBalance(super.getBalance() + value);
+            user.setBalance(user.getBalance() + value);
+            return "Transferencia realizada com sucesso";
+        }
     }
 }
