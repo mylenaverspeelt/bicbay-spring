@@ -1,10 +1,17 @@
 package project.bicbay.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
+@DiscriminatorValue("CLIENT")
 public class Client  extends User{
+    @Column(nullable = false, unique = true)
     private String cpf;
+
+    public Client() {
+    }
 
     public Client(String name, String email, String password, float balance, String cpf) {
         super(name, email, password, balance);

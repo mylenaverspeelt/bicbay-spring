@@ -5,15 +5,20 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "dtype")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String email;
     private String password;
     private float balance;
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    public User() {
+    }
 
     public User(String name, String email, String password, float balance) {
         this.name = name;
