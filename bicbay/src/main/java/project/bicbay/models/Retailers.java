@@ -5,13 +5,13 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("RETAILERS")
+@DiscriminatorValue("RETAILER")
 public class Retailers extends User {
-    @Column(nullable = false, unique = true)
+    @Column(name = "cnpj", nullable = false, unique = true)
     private String cnpj;
 
     public Retailers() {
-
+        super();
     }
 
     public Retailers(String name, String email, String password, float balance, String cnpj) {

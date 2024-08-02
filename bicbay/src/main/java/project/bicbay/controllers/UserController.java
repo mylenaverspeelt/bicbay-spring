@@ -1,61 +1,51 @@
 package project.bicbay.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.bicbay.dto.TransferDTO;
-import project.bicbay.models.Client;
-import project.bicbay.models.Retailers;
-import project.bicbay.models.User;
+import project.bicbay.dto.UserDTO;
 import project.bicbay.repositories.UserRepository;
-
-import java.util.Optional;
+import project.bicbay.service.TransferService;
+import project.bicbay.service.UserService;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final UserRepository userRepository;
 
-    //TODO: MUDAR ESSES OBJETOS
-    Client cliente1 = new Client("Mylena", "mymy@email.com", "123456", 500, "123456789");
-    Retailers retailer1 = new Retailers("Ana", "ana@email.com", "123456", 400, "1234567890");
+    private final UserService userService;
+    private final TransferService transferService;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserRepository userRepository, UserService service, UserService userService, TransferService transferService) {
+        this.userService = userService;
+        this.transferService = transferService;
     }
 
     @PostMapping("/register")
-    public String registerNewUser() {
-
-        boolean isUser = findUser();
-
-        if (!isUser) {
-            userRepository.save(cliente1);
-            userRepository.save(retailer1);
-            return "Cliente salvo com sucesso";
+    public ResponseEntity<String> registerNewUser(@RequestBody UserDTO userDTO) {
+        String result = userService.registerUser(userDTO);
+        if (result.equals("Cliente salvo com sucesso.")) {
+            return ResponseEntity.ok(result);
         } else {
-            return "Cliente já cadastrado na base de dados.";
-
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
         }
     }
 
-//    @PostMapping("/transfer")
-//    public String transfer() {
-//
-//       User user = dto.user();
-//       float value = dto.value();
-//
-//       if (!findUser()){
-//           return "Algum erro aconteceu. A transferencia não foi realizada."
-//       }else{
-//           return "Transferencia realizada com sucesso.";
-//       }
-//    }
-
-    public Boolean findUser() {
-        Optional<User> user = this.userRepository.findByEmail(cliente1.getEmail());
-        return user.isPresent();
+    @PostMapping("/transfer")
+    public ResponseEntity<String> transfer(@RequestBody TransferDTO transferDTO) {
+        if (transferDTO.getPayer() == null || transferDTO.getPayee() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("IDs do pagador e do recebedor não podem ser nulos.");
+        }
+        String result = transferService.transfer(transferDTO);
+        if (result.equals("Transferência realizada com sucesso.")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+        }
     }
 }
